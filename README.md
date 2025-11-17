@@ -336,8 +336,6 @@ Este projeto é **privado** e todos os direitos são reservados.
 Se encontrar problemas ou tiver dúvidas:
 
 - Abra uma [Issue](../../issues)
-- Consulte a [Documentação de Segurança](./SECURITY.md)
-- Revise o [Changelog](./CHANGELOG.md)
 
 ---
 
