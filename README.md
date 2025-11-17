@@ -327,7 +327,7 @@ Este projeto é **privado** e todos os direitos são reservados.
 
 ## 👥 Autores
 
-- Desenvolvido por **[Mateus Lira]**
+- Desenvolvido por **Mateus Lira**
 
 ---
 
