@@ -111,7 +111,7 @@ Thumbs.db
 .pnp.*
 
 # Project specific
-foto_projeto.png
+# foto_projeto.png - Permitido (usado no README)
 *.png:Zone.Identifier
 screenshots/
 .vercel

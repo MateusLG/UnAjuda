@@ -10,6 +10,15 @@
 
 ---
 
+## 📸 Preview
+
+<div align="center">
+  <img src="./foto_projeto.png" alt="UnAjuda - Página Inicial" width="100%" />
+  <p><em>Interface da página inicial do UnAjuda</em></p>
+</div>
+
+---
+
 ## 📖 Sobre o Projeto
 
 **UnAjuda** é uma plataforma moderna e interativa onde estudantes universitários podem compartilhar conhecimento, esclarecer dúvidas e construir uma comunidade acadêmica forte. Inspirada no Stack Overflow, a plataforma oferece uma experiência otimizada para o ambiente universitário brasileiro.
@@ -77,8 +86,8 @@ Antes de começar, certifique-se de ter instalado:
 ### 1️⃣ Clone o Repositório
 
 ```bash
-git clone <URL_DO_REPOSITORIO>
-cd unajuda-243ad330
+git clone https://github.com/MateusLG/UnAjuda
+cd UnAjuda
 ```
 
 ### 2️⃣ Instale as Dependências
@@ -318,7 +327,7 @@ Este projeto é **privado** e todos os direitos são reservados.
 
 ## 👥 Autores
 
-- Desenvolvido por **[Seu Nome]**
+- Desenvolvido por **[Mateus Lira]**
 
 ---
 
