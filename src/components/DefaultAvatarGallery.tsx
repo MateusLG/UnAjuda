@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { Avatar, AvatarImage } from "@/components/ui/avatar";
 import { Check } from "lucide-react";
 import { cn } from "@/lib/utils";

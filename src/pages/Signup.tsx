@@ -1,22 +1,26 @@
-import { useState, useEffect } from "react";
+import { useEffect } from "react";
 import { Link } from "react-router-dom";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { useAuth } from "@/contexts/AuthContext";
 import { useNavigate } from "react-router-dom";
+import { signupSchema, type SignupFormData } from "@/lib/validations";
 
 const Signup = () => {
-  const [formData, setFormData] = useState({
-    fullName: "",
-    username: "",
-    email: "",
-    password: "",
-    confirmPassword: "",
-  });
   const { signUp, user } = useAuth();
   const navigate = useNavigate();
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isSubmitting },
+  } = useForm<SignupFormData>({
+    resolver: zodResolver(signupSchema),
+  });
 
   useEffect(() => {
     if (user) {
@@ -24,22 +28,8 @@ const Signup = () => {
     }
   }, [user, navigate]);
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    
-    if (formData.password !== formData.confirmPassword) {
-      alert("As senhas não coincidem!");
-      return;
-    }
-
-    await signUp(formData.email, formData.password, formData.fullName, formData.username);
-  };
-
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFormData({
-      ...formData,
-      [e.target.id]: e.target.value,
-    });
+  const onSubmit = async (data: SignupFormData) => {
+    await signUp(data.email, data.password, data.full_name, data.username);
   };
 
   return (
@@ -55,17 +45,19 @@ const Signup = () => {
           </CardDescription>
         </CardHeader>
         <CardContent className="animate-fade-in-up stagger-1">
-          <form onSubmit={handleSubmit} className="space-y-4">
+          <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="fullName">Nome completo</Label>
+              <Label htmlFor="full_name">Nome completo</Label>
               <Input
-                id="fullName"
+                id="full_name"
                 type="text"
                 placeholder="João Silva"
-                value={formData.fullName}
-                onChange={handleChange}
-                required
+                {...register("full_name")}
+                aria-invalid={errors.full_name ? "true" : "false"}
               />
+              {errors.full_name && (
+                <p className="text-sm text-destructive">{errors.full_name.message}</p>
+              )}
             </div>
             <div className="space-y-2">
               <Label htmlFor="username">Nome de usuário</Label>
@@ -73,10 +65,12 @@ const Signup = () => {
                 id="username"
                 type="text"
                 placeholder="joaosilva"
-                value={formData.username}
-                onChange={handleChange}
-                required
+                {...register("username")}
+                aria-invalid={errors.username ? "true" : "false"}
               />
+              {errors.username && (
+                <p className="text-sm text-destructive">{errors.username.message}</p>
+              )}
             </div>
 
             <div className="space-y-2">
@@ -85,21 +79,25 @@ const Signup = () => {
                 id="email"
                 type="email"
                 placeholder="seu@email.com"
-                value={formData.email}
-                onChange={handleChange}
-                required
+                {...register("email")}
+                aria-invalid={errors.email ? "true" : "false"}
               />
+              {errors.email && (
+                <p className="text-sm text-destructive">{errors.email.message}</p>
+              )}
             </div>
             <div className="space-y-2">
               <Label htmlFor="password">Senha</Label>
               <Input
                 id="password"
                 type="password"
-                placeholder="••••••••"
-                value={formData.password}
-                onChange={handleChange}
-                required
+                placeholder="Mínimo 8 caracteres, com maiúscula, número e símbolo"
+                {...register("password")}
+                aria-invalid={errors.password ? "true" : "false"}
               />
+              {errors.password && (
+                <p className="text-sm text-destructive">{errors.password.message}</p>
+              )}
             </div>
             <div className="space-y-2">
               <Label htmlFor="confirmPassword">Confirmar senha</Label>
@@ -107,13 +105,15 @@ const Signup = () => {
                 id="confirmPassword"
                 type="password"
                 placeholder="••••••••"
-                value={formData.confirmPassword}
-                onChange={handleChange}
-                required
+                {...register("confirmPassword")}
+                aria-invalid={errors.confirmPassword ? "true" : "false"}
               />
+              {errors.confirmPassword && (
+                <p className="text-sm text-destructive">{errors.confirmPassword.message}</p>
+              )}
             </div>
-            <Button type="submit" className="w-full">
-              Cadastrar
+            <Button type="submit" className="w-full" disabled={isSubmitting}>
+              {isSubmitting ? "Cadastrando..." : "Cadastrar"}
             </Button>
           </form>
           <div className="mt-4 text-center text-sm">

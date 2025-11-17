@@ -3,6 +3,8 @@ import { User, Session } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
 import { useNavigate } from 'react-router-dom';
 import { toast } from '@/hooks/use-toast';
+import { sanitizeErrorMessage, sanitizeInput, logError } from '@/lib/error-handler';
+import { emailSchema, usernameSchema, fullNameSchema } from '@/lib/validations';
 
 interface AuthContextType {
   user: User | null;
@@ -44,22 +46,43 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   const signUp = async (email: string, password: string, fullName: string, username: string) => {
     try {
+      // Sanitize inputs
+      const sanitizedEmail = sanitizeInput(email);
+      const sanitizedFullName = sanitizeInput(fullName);
+      const sanitizedUsername = sanitizeInput(username);
+
+      // Validate inputs
+      try {
+        emailSchema.parse(sanitizedEmail);
+        fullNameSchema.parse(sanitizedFullName);
+        usernameSchema.parse(sanitizedUsername);
+      } catch (validationError: any) {
+        const message = validationError.errors?.[0]?.message || "Dados inválidos";
+        toast({
+          title: "Erro de validação",
+          description: message,
+          variant: "destructive",
+        });
+        return { error: validationError };
+      }
+
       const { error } = await supabase.auth.signUp({
-        email,
+        email: sanitizedEmail,
         password,
         options: {
           emailRedirectTo: `${window.location.origin}/`,
           data: {
-            full_name: fullName,
-            username: username,
+            full_name: sanitizedFullName,
+            username: sanitizedUsername,
           }
         }
       });
 
       if (error) {
+        logError(error, "signUp");
         toast({
           title: "Erro no cadastro",
-          description: error.message,
+          description: sanitizeErrorMessage(error),
           variant: "destructive",
         });
         return { error };
@@ -69,25 +92,48 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         title: "Cadastro realizado!",
         description: "Bem-vindo ao UnAjuda!",
       });
-      
+
       navigate('/');
       return { error: null };
     } catch (error: any) {
+      logError(error, "signUp");
+      toast({
+        title: "Erro no cadastro",
+        description: sanitizeErrorMessage(error),
+        variant: "destructive",
+      });
       return { error };
     }
   };
 
   const signIn = async (email: string, password: string) => {
     try {
+      // Sanitize input
+      const sanitizedEmail = sanitizeInput(email);
+
+      // Validate email
+      try {
+        emailSchema.parse(sanitizedEmail);
+      } catch (validationError: any) {
+        const message = validationError.errors?.[0]?.message || "Email inválido";
+        toast({
+          title: "Erro de validação",
+          description: message,
+          variant: "destructive",
+        });
+        return { error: validationError };
+      }
+
       const { error } = await supabase.auth.signInWithPassword({
-        email,
+        email: sanitizedEmail,
         password,
       });
 
       if (error) {
+        logError(error, "signIn");
         toast({
           title: "Erro no login",
-          description: error.message,
+          description: sanitizeErrorMessage(error, "Credenciais inválidas"),
           variant: "destructive",
         });
         return { error };
@@ -97,10 +143,16 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         title: "Login realizado!",
         description: "Bem-vindo de volta!",
       });
-      
+
       navigate('/');
       return { error: null };
     } catch (error: any) {
+      logError(error, "signIn");
+      toast({
+        title: "Erro no login",
+        description: sanitizeErrorMessage(error, "Credenciais inválidas"),
+        variant: "destructive",
+      });
       return { error };
     }
   };
@@ -116,14 +168,31 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   const resetPassword = async (email: string) => {
     try {
-      const { error } = await supabase.auth.resetPasswordForEmail(email, {
+      // Sanitize input
+      const sanitizedEmail = sanitizeInput(email);
+
+      // Validate email
+      try {
+        emailSchema.parse(sanitizedEmail);
+      } catch (validationError: any) {
+        const message = validationError.errors?.[0]?.message || "Email inválido";
+        toast({
+          title: "Erro de validação",
+          description: message,
+          variant: "destructive",
+        });
+        return { error: validationError };
+      }
+
+      const { error } = await supabase.auth.resetPasswordForEmail(sanitizedEmail, {
         redirectTo: `${window.location.origin}/recuperar-senha`,
       });
 
       if (error) {
+        logError(error, "resetPassword");
         toast({
           title: "Erro",
-          description: error.message,
+          description: sanitizeErrorMessage(error),
           variant: "destructive",
         });
         return { error };
@@ -133,9 +202,15 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         title: "Email enviado!",
         description: "Verifique sua caixa de entrada.",
       });
-      
+
       return { error: null };
     } catch (error: any) {
+      logError(error, "resetPassword");
+      toast({
+        title: "Erro",
+        description: sanitizeErrorMessage(error),
+        variant: "destructive",
+      });
       return { error };
     }
   };

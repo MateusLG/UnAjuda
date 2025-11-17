@@ -32,7 +32,7 @@ const Navbar = () => {
             {user ? (
               <>
                 <Button variant="default" asChild>
-                  <Link to="/nova-pergunta">Perguntar</Link>
+                  <Link to="/criar-pergunta">Perguntar</Link>
                 </Button>
                 <NotificationBell />
                 <Button variant="ghost" size="icon" asChild>
@@ -79,7 +79,7 @@ const Navbar = () => {
             {user ? (
               <>
                 <Button variant="default" className="w-full" asChild>
-                  <Link to="/nova-pergunta" onClick={() => setMobileMenuOpen(false)}>
+                  <Link to="/criar-pergunta" onClick={() => setMobileMenuOpen(false)}>
                     Perguntar
                   </Link>
                 </Button>
